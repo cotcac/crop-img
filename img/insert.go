@@ -40,6 +40,9 @@ Then we resize it. The first step is needed because if not we will get a stretch
 
 func resizeImg(width, height uint, imgPath string) string {
 
+	savePath := "public/images/"
+	baseURL := "http://localhost:8080/"
+
 	// open image
 	file, err := os.Open(imgPath)
 	if err != nil {
@@ -69,8 +72,10 @@ func resizeImg(width, height uint, imgPath string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	out, err := os.Create("public/" + id + ".jpg")
+	// public/images/image_name.jpg
+	//Related file path + file name + ext
+	relatedOut := savePath + id + ".jpg"
+	out, err := os.Create(relatedOut)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,6 +88,6 @@ func resizeImg(width, height uint, imgPath string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return "http://localhost:8080/" + "public/" + id + ".jpg"
+	return baseURL + relatedOut
 
 }
