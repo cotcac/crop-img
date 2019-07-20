@@ -1,9 +1,12 @@
 package img
 
 import (
+	"fmt"
 	"image/jpeg"
 	"log"
+	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nfnt/resize"
@@ -13,7 +16,19 @@ import (
 
 // Insert contact data
 func Insert(c *gin.Context) {
-	url := resizeImg(182, 268)
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+
+	filename := filepath.Base(file.Filename)
+	if err := c.SaveUploadedFile(file, filename); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+		return
+	}
+	fmt.Println(filename)
+	url := resizeImg(182, 268, filename)
 	c.JSON(200, gin.H{
 		"img": url,
 	})
@@ -23,10 +38,10 @@ func Insert(c *gin.Context) {
 First we get a random size image. We need to crop it with the correct ratio we want.
 Then we resize it. The first step is needed because if not we will get a stretch image.*/
 
-func resizeImg(width, height uint) string {
+func resizeImg(width, height uint, imgPath string) string {
 
 	// open image
-	file, err := os.Open("public/3.jpg")
+	file, err := os.Open(imgPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,6 +78,11 @@ func resizeImg(width, height uint) string {
 
 	// write new image to file
 	jpeg.Encode(out, m1, nil)
+	// remove the original file
+	err = os.Remove(imgPath)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return "http://localhost:8080/" + "public/" + id + ".jpg"
 
 }
