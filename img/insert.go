@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nfnt/resize"
@@ -14,7 +16,7 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-// Insert contact data
+// Insert photo data
 func Insert(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -40,7 +42,14 @@ Then we resize it. The first step is needed because if not we will get a stretch
 
 func resizeImg(width, height uint, imgPath string) string {
 
-	savePath := "public/images/"
+	t := time.Now()
+	year := t.Year()        // type int
+	month := int(t.Month()) // type int
+	// create directory if not exist. With related year / month
+	savePath := "public/images/" + strconv.Itoa(year) + "/" + strconv.Itoa(month)
+	fmt.Println(savePath)
+	os.MkdirAll(savePath, os.ModePerm)
+
 	baseURL := "http://localhost:8080/"
 
 	// open image
