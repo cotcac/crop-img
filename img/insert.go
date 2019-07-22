@@ -36,7 +36,7 @@ func Insert(c *gin.Context) {
 	})
 }
 
-/*Resize image to 182x268
+/*Resize image to 182x268 ratio 91/134
 First we get a random size image. We need to crop it with the correct ratio we want.
 Then we resize it. The first step is needed because if not we will get a stretch image.*/
 
@@ -46,7 +46,7 @@ func resizeImg(width, height uint, imgPath string) string {
 	year := t.Year()        // type int
 	month := int(t.Month()) // type int
 	// create directory if not exist. With related year / month
-	savePath := "public/images/" + strconv.Itoa(year) + "/" + strconv.Itoa(month)
+	savePath := "public/images/movies/" + strconv.Itoa(year) + "/" + strconv.Itoa(month) + "/"
 	fmt.Println(savePath)
 	os.MkdirAll(savePath, os.ModePerm)
 
@@ -68,8 +68,8 @@ func resizeImg(width, height uint, imgPath string) string {
 	//The default crop use the specified dimension, but it is possible to use Width and Heigth as a ratio instead.
 	//  In this case, the resulting image will be as big as possible to fit the asked ratio from the anchor position.
 	m, err := cutter.Crop(img, cutter.Config{
-		Width:   int(width),
-		Height:  int(height),
+		Width:   91,  //int(width),
+		Height:  134, //int(height),
 		Mode:    cutter.Centered,
 		Options: cutter.Ratio,
 	})
